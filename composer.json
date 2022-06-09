@@ -1,0 +1,40 @@
+{
+    "name": "codificar/check-version",
+    "description": "A Laravel Lib to check app version from app store and play store",
+    "type": "package",
+    "license": "Codificar Sistemas LTDA",
+    "authors": [
+    ],
+    "repositories": [
+        {
+          "type": "package",
+          "package": {
+            "name": "codificar/check-version",
+            "version": "master",
+            "source": {
+              "url": "https://libs:ofImhksJ@git.codificar.com.br/laravel-libs/laravel-check-version.git",
+              "type": "git",
+              "reference": "master"
+            }
+          }
+        }
+    ],   
+    "autoload": {
+        "psr-4": {
+            "Codificar\\CheckVersion\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Codificar\\CheckVersion\\CheckVersionServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
+}
