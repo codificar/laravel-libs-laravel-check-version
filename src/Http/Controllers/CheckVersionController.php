@@ -9,22 +9,24 @@ use Codificar\CheckVersion\Http\Requests\CheckVersionFormRequest;
 
 use Exception;
 
-class CheckVersionController extends Controller {
+class CheckVersionController extends Controller
+{
 
- 	/**
-     * @api {GET}/api/lib/checkversion
+	/**
+	 * @api {GET}/api/lib/checkversion
 	 *  
-     * fetch app version from playstore ou appstore
+	 * fetch app version from playstore ou appstore
 	 * 
-     * @param CheckVersionFormRequest $request
-     * @return json
-     */
-	public function getVersion(CheckVersionFormRequest $request) {
+	 * @param CheckVersionFormRequest $request
+	 * @return json
+	 */
+	public function getVersion(CheckVersionFormRequest $request)
+	{
 		$version = $this->fetchVersion($request->url, $request->type);
 
 		return response()->json([
-            'version' => $version
-        ]);
+			'version' => $version
+		]);
 	}
 
 	/**
@@ -35,7 +37,8 @@ class CheckVersionController extends Controller {
 	 * 
 	 * @return \Codificar\CheckVersion\Http\Controllers\view
 	 */
-	private function fetchVersion($url, $type) {
+	private function fetchVersion($url, $type)
+	{
 		if ($type == 'android') {
 			return $this->fetchAndroidVersion($url);
 		}
@@ -44,10 +47,11 @@ class CheckVersionController extends Controller {
 	}
 
 	/**
-     * Fetch Android version
-     * @return view
-     */
-	private function fetchAndroidVersion($url) {
+	 * Fetch Android version
+	 * @return view
+	 */
+	private function fetchAndroidVersion($url)
+	{
 		$html = file_get_contents($url);
 
 		$matches = [];
@@ -61,10 +65,11 @@ class CheckVersionController extends Controller {
 	}
 
 	/**
-     * Fetch Ios version
-     * @return view
-     */
-	private function fetchIosVersion($url) {
+	 * Fetch Ios version
+	 * @return view
+	 */
+	private function fetchIosVersion($url)
+	{
 		$response = Http::get($url);
 
 		if (!$response) {
