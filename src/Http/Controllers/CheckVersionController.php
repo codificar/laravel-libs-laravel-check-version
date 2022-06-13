@@ -72,8 +72,12 @@ class CheckVersionController extends Controller
 	{
 		$response = Http::get($url);
 
-		if (!$response) {
+		if (!$response && !response['results']) {
 			throw new Exception("Unknown error connecting to iTunes.");
+		}
+
+		if (count(response['results']) == 0) {
+			throw new Exception("App for this bundle ID not found.");
 		}
 
 		return $response['results'][0]['version'];
