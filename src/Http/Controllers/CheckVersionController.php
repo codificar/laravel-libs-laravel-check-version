@@ -23,9 +23,17 @@ class CheckVersionController extends Controller
     {
         $version = $this->fetchVersion($request->url, $request->type);
 
+        if($version) {
+            return response()->json([
+                'success' => true,
+                'version' => $version
+            ]);
+        }
         return response()->json([
-            'version' => $version
-        ]);
+            'success' => false,
+            'error_code' => \ApiErrors::REQUEST_FAILED
+        ], \ApiErrors::REQUEST_FAILED);
+
     }
 
     /**
@@ -51,17 +59,23 @@ class CheckVersionController extends Controller
      */
     private function fetchAndroidVersion($url)
     {
-        $html = file_get_contents($url);
+        try{
+            $html = file_get_contents($url);
+    
+            $matches = [];
+            preg_match('/\[\[\[\"\d+\.\d+\.\d+/', $html, $matches);
+    
+            if (empty($matches) || count($matches) > 1) {
+                \Log::warning('Could not fetch Android app version info!');
+                return false;
+            }
+    
+            return substr(current($matches), 4);
 
-        $matches = [];
-        preg_match('/\[\[\[\"\d+\.\d+\.\d+/', $html, $matches);
-
-        if (empty($matches) || count($matches) > 1) {
-            \Log::warning('Could not fetch Android app version info!');
+        } catch(\Exception $e) {
+            \Log::error($e->getMessage() . $e->getTraceAsString());
             return false;
         }
-
-        return substr(current($matches), 4);
     }
 
     /**
@@ -70,18 +84,25 @@ class CheckVersionController extends Controller
      */
     private function fetchIosVersion($url)
     {
-        $response = Http::get($url);
+        try {
+            $response = Http::get($url);
+    
+            if (!$response && !$response['results']) {
+                \Log::warning('Unknown error connecting to iTunes.');
+                return false;
+            }
+    
+            if (count($response['results']) == 0) {
+                \Log::warning('App for this bundle ID not found.');
+                return false;
+            }
 
-        if (!$response && !$response['results']) {
-            \Log::warning('Unknown error connecting to iTunes.');
+            return $response['results'][0]['version'];
+
+        } catch(\Exception $e) {
+            \Log::error($e->getMessage() . $e->getTraceAsString());
             return false;
         }
 
-        if (count($response['results']) == 0) {
-            \Log::warning('App for this bundle ID not found.');
-            return false;
-        }
-
-        return $response['results'][0]['version'];
     }
 }
